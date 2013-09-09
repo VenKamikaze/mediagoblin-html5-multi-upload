@@ -15,8 +15,8 @@ Restart mediagoblin.
 You should be able to reach the page at http://yoursite/html5-multi-upload/
 
 Note that if using fcgi, you may need to increase the maximum size of a POST that it can process. I did this by adding this to my httpd configuration:
-# Accept up to 64MB requests
-FcgidMaxRequestLen 67108864
+ # Accept up to 64MB requests
+ FcgidMaxRequestLen 67108864
 
 You'll probably have to do something similar for other methods aswell.
 
