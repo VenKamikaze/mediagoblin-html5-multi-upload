@@ -1,4 +1,4 @@
-mediagoblin-html5-multi-upload
+mediagoblin-html5-multi-upload (0.6.0-dev)
 ==============================
 
 Mediagoblin v0.6.0-dev html5 multi-upload plugin
