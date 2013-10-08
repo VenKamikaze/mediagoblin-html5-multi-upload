@@ -44,7 +44,9 @@ def multi_submit_start(request):
   """
   First view for submitting a file.
   """
-  submit_form = submit_forms.SubmitStartForm(request.form, license=request.user.license_preference)
+  submit_form = submit_forms.get_submit_start_form(request.form, license=request.user.license_preference)
+#  Below is what was used for mediagoblin 0.5.0-dev. Above is the new way.
+#  submit_form = submit_forms.SubmitStartForm(request.form, license=request.user.license_preference)
   filecount = 0
   if request.method == 'POST' and submit_form.validate():
     if not check_file_field(request, 'file'):
