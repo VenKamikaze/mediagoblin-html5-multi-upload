@@ -68,7 +68,7 @@ def multi_submit_start(request):
             # Sniff the submitted media to determine which
             # media plugin should handle processing
             media_type, media_manager = sniff_media(
-              submitted_file)
+              submitted_file, filename)
     
             # create entry and save in database
             entry = new_upload_entry(request.user)
