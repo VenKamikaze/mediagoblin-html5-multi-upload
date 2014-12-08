@@ -1,9 +1,10 @@
-mediagoblin-html5-multi-upload (0.6.0-dev)
+mediagoblin-html5-multi-upload (0.7.1)
 ==============================
 
-Mediagoblin v0.6.0-dev html5 multi-upload plugin
+Mediagoblin v0.7.1 html5 multi-upload plugin.
 
-This was based against mediagoblin v0.4.1 and then updated to work with 0.6.0-dev (git clone of 2013-10-08).
+This was originally based against mediagoblin v0.4.1, however with the latest merge to master has been reported to work with v0.7.1 (Thanks to Kim Jahn for the patch, and yanosz for testing).
+
 May not work against later versions of mediagoblin as it depends on functions in the standard upload form, but please give it a try, let me know how you go.
 
 To deploy, put the files from this github repository in your mediagoblin/plugins/ directory
@@ -22,7 +23,6 @@ FcgidMaxRequestLen 67108864
 </pre>
 You'll probably have to do something similar for other methods aswell.
 
-It requires HTML5 support to be able to add multiple files. Files are processed one at a time (at least with my instance). 
-This was intentional, as I run my mediagoblin on a low power device with extremely limited CPU and RAM.
+It requires HTML5 support to be able to add multiple files. Files are processed one at a time (at least with my instance). This was intentional, as I run my mediagoblin on a low power device with extremely limited CPU and RAM.
 
 Hope this is useful for someone.
