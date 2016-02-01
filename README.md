@@ -1,9 +1,9 @@
-mediagoblin-html5-multi-upload (0.7.1)
+mediagoblin-html5-multi-upload (0.9.0)
 ==============================
 
-Mediagoblin v0.7.1 html5 multi-upload plugin.
+Mediagoblin v0.9.0 html5 multi-upload plugin.
 
-This was originally based against mediagoblin v0.4.1, however with the latest merge to master has been reported to work with v0.7.1 (Thanks to Kim Jahn for the patch, and yanosz for testing).
+This was originally based against mediagoblin v0.4.1, however with the latest merge to master has been reported to work with v0.9.0 (Thanks to tofay for the patch). 
 
 May not work against later versions of mediagoblin as it depends on functions in the standard upload form, but please give it a try, let me know how you go.
 
