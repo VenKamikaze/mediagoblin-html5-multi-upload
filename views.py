@@ -25,6 +25,8 @@ import uuid
 _log = logging.getLogger(__name__)
 
 
+from mediagoblin.db.models import Collection
+from mediagoblin.tools.federation import create_activity
 from mediagoblin.tools.text import convert_to_tag_list_of_dicts
 from mediagoblin.tools.translate import pass_to_ugettext as _
 from mediagoblin.tools.response import render_to_response, redirect
@@ -32,9 +34,10 @@ from mediagoblin.decorators import require_active_login
 from mediagoblin.submit import forms as submit_forms
 from mediagoblin.messages import add_message, SUCCESS
 from mediagoblin.media_types import sniff_media, \
-    InvalidFileType, FileTypeNotSupported
+    TypeNotFound, FileTypeNotSupported
 from mediagoblin.submit.lib import check_file_field, prepare_queue_task, \
     run_process_media, new_upload_entry
+from mediagoblin.user_pages.lib import add_media_to_collection
 
 from mediagoblin.notifications import add_comment_subscription
 
@@ -45,6 +48,16 @@ def multi_submit_start(request):
   First view for submitting a file.
   """
   submit_form = submit_forms.get_submit_start_form(request.form, license=request.user.license_preference)
+  users_collections = Collection.query.filter_by(
+    actor=request.user.id,
+    type=Collection.USER_DEFINED_TYPE
+  ).order_by(Collection.title)
+
+  if users_collections.count() > 0:
+    submit_form.collection.query = users_collections
+  else:
+    del submit_form.collection
+
 #  Below is what was used for mediagoblin 0.5.0-dev. Above is the new way.
 #  submit_form = submit_forms.SubmitStartForm(request.form, license=request.user.license_preference)
   filecount = 0
@@ -60,42 +73,42 @@ def multi_submit_start(request):
           else:
             filename = submitted_file.filename
             _log.info("html5-multi-upload: Got filename: %s" % filename)
-    
+
             # If the filename contains non ascii generate a unique name
             if not all(ord(c) < 128 for c in filename):
               filename = unicode(uuid.uuid4()) + splitext(filename)[-1]
-    
+
             # Sniff the submitted media to determine which
             # media plugin should handle processing
             media_type, media_manager = sniff_media(
               submitted_file, filename)
-    
+
             # create entry and save in database
             entry = new_upload_entry(request.user)
             entry.media_type = unicode(media_type)
             entry.title = (
               unicode(submit_form.title.data)
               or unicode(splitext(submitted_file.filename)[0]))
-    
+
             entry.description = unicode(submit_form.description.data)
-    
+
             entry.license = unicode(submit_form.license.data) or None
-    
+
             # Process the user's folksonomy "tags"
             entry.tags = convert_to_tag_list_of_dicts(
               submit_form.tags.data)
-    
+
             # Generate a slug from the title
             entry.generate_slug()
-    
+
             queue_file = prepare_queue_task(request.app, entry, filename)
-    
+
             with queue_file:
               queue_file.write(submitted_file.stream.read())
-    
+
             # Save now so we have this data before kicking off processing
             entry.save()
-    
+
             # Pass off to async processing
             #
             # (... don't change entry after this point to avoid race
@@ -104,7 +117,13 @@ def multi_submit_start(request):
               'mediagoblin.user_pages.atom_feed',
               qualified=True, user=request.user.username)
             run_process_media(entry, feed_url)
-    
+            if submit_form.collection and submit_form.collection.data:
+              add_media_to_collection(
+                submit_form.collection.data, entry)
+              create_activity(
+                "add", entry, request.user,
+                target=submit_form.collection.data)
+
             add_comment_subscription(request.user, entry)
             filecount = filecount + 1
 
@@ -113,7 +132,7 @@ def multi_submit_start(request):
           This section is intended to catch exceptions raised in
           mediagoblin.media_types
           '''
-          if isinstance(e, InvalidFileType) or isinstance(e, FileTypeNotSupported):
+          if isinstance(e, TypeNotFound) or isinstance(e, FileTypeNotSupported):
             submit_form.file.errors.append(e)
           else:
             raise
@@ -126,4 +145,3 @@ def multi_submit_start(request):
     request,
     'start.html',
     {'multi_submit_form': submit_form})
-
