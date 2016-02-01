@@ -5,6 +5,8 @@ Mediagoblin v0.9.0 html5 multi-upload plugin.
 
 This was originally based against mediagoblin v0.4.1, however with the latest merge to master has been reported to work with v0.9.0 (Thanks to tofay for the patch). 
 
+Note: This version is incompatible with release v0.8.1.
+
 May not work against later versions of mediagoblin as it depends on functions in the standard upload form, but please give it a try, let me know how you go.
 
 To deploy, put the files from this github repository in your mediagoblin/plugins/ directory
